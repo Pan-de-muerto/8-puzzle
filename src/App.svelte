@@ -1,5 +1,4 @@
 <script>
-	export let name;
 	import Board from './Board.svelte'
 </script>
 
@@ -9,7 +8,11 @@
 
 <style>
 	main {
-		text-align: center;
-		margin: 10rem 20rem;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		margin: 0 20%;
+		margin-top: 5%
 	}
 </style>
