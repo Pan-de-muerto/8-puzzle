@@ -29,8 +29,9 @@ class State {
             if (!!child) {
                 let child_node = new State(child, this.level + 1, 0);
                 children.push(child_node);
-            } // is not null, false, undefined, NaN ....
+            }
         });
+        //  console.log(children);
         return children;
     }
 
@@ -51,10 +52,10 @@ class State {
 
     // Buscar el movimiento valido
     valid_position(board, x1, y1, x2, y2) {
-        if (x2 >= 0 && x2 < this.value.length && y2 >= 0 && y2 < this.value.length) {
+        if (x2 >= 0 && x2 < board.length && y2 >= 0 && y2 < board.length) {
             let temp_board = [];
             temp_board = _.cloneDeep(board)
-            let temp = temp_board[x2][y2];
+            let temp = _.cloneDeep(temp_board)[x2][y2];
             temp_board[x2][y2] = temp_board[x1][y1];
             temp_board[x1][y1] = temp;
             return temp_board
@@ -85,13 +86,7 @@ class Eight_Puzzle {
         let g_x = initial_state.level;
         let h_x = this.h_misplaced_tiles(initial_state.value, goal_state);
         let f_x = g_x + h_x;
-
-        // console.log("\ng(x): ", g_x) // REMOVE LATER
-        // console.log("h(x): ", h_x) // REMOVE LATER
-        // console.log("f(x): ", f_x) // REMOVE LATER
-
         return f_x
-
     }
 
     f1(initial_state, goal_state) {
@@ -111,26 +106,17 @@ class Eight_Puzzle {
         initial_state.fval = this.f_misplaced_tiles(initial_state, goal_state);
 
         this.fringe.push(initial_state);
-        // console.log("\n\n");
 
         while (true) {
             let cur = this.fringe[0];
             if (counter == 0) counter = 1;
-            else {
-                // console.log("")
-                // console.log("  |  ")
-                // console.log("  |  ")
-                // console.log("  |  ")
-                // console.log(" \\/ \n")
-            }
 
-            console.log(JSON.stringify(cur.value));
+            cur.value.forEach(x =>  console.log(x + "\n"));
+            
             path.push(cur.value);
 
             if (this.h_misplaced_tiles(cur.value, goal_state) == 0)
                 break;
-
-            // console.log("\nBelow are the values of all the child nodes that are added to the fringe but will expand the node with minimum value of f(x): ")
 
             cur.generate_children().forEach(element => {
                 element.fval = this.f_misplaced_tiles(element, goal_state);
@@ -139,17 +125,12 @@ class Eight_Puzzle {
 
             this.explored.push(cur);
             this.fringe.shift();
-
-            this.fringe = _.sortBy(this.fringe, [(o) => { return o.fval }]);
-
+            this.fringe = _.sortBy(this.fringe, ['fval']);
             const { f, g, h } = obj.f1(cur, goal_state);
-            // console.log("\ng(x): " + g)
-            // console.log("h(x): " + h)
-            // console.log("f(x):" + f)
-            // console.log("Path Cost: " + f)
-            // console.log("Generated Nodes: ", this.fringe.length)
-            // console.log("Expanded Nodes: ", this.explored.length)
+
         }
+
+
         return path;
     }
 
@@ -158,4 +139,9 @@ let obj = new Eight_Puzzle(3);
 
 export const getPath = (initial_state) => {
     return obj.stage_process(initial_state);
+}
+
+export const generateClidren = (initial_state) => {
+    let state = new State(initial_state, 0, 0);
+    return state.generate_children().map(x => x.value);
 }

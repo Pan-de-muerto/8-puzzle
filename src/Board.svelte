@@ -1,9 +1,9 @@
 <script>
     import _ from "lodash";
     import { onMount } from "svelte";
-    import { getPath } from "../scripts/solver.mjs";
+    import { getPath , generateClidren } from "../scripts/solver.mjs";
 
-    let characters = ["🥳", "🎉", "✨"];
+    let characters = ["🍆" , "🔥" , "💯 ","🥵"];
     let confetti = new Array(100)
         .fill()
         .map((_, i) => {
@@ -25,7 +25,13 @@
 
     let current = _.cloneDeep(solved);
 
-    const randomize = () => {};
+    const randomize = () => {
+        const shuffleDepth = 4;
+        for(let i = 0 ; i <= shuffleDepth ; i++){
+            let options = generateClidren(current);
+            current = _.sample(options);
+        }
+    };
 
     const handleFileUpload = async (e) => {
         let file = e.target.files[0];
@@ -61,7 +67,6 @@
 
     const handleSolve = () => {
         let path = getPath(current);
-
         path.forEach((step, i) => {
             setTimeout(function timer() {
                 current = step;
@@ -112,6 +117,13 @@
         loop();
         return () => cancelAnimationFrame(frame);
     };
+
+    const triggerUpload= () => {
+        document.getElementById("text-file").click()
+    }
+
+
+
 </script>
 
 <div class="board">
@@ -128,10 +140,12 @@
     {/each}
 </div>
 <br />
-<button on:click={handleSolve}>Solve</button>
-<button>Randomize</button>
-<button>Upload</button>
-<input type="file" accept="text/plain" on:change={(e) => handleFileUpload(e)} />
+<div class="button-group">
+    <button on:click={handleSolve}>Solve</button>
+    <button on:click="{randomize}">Shuffle</button>
+    <button on:click="{triggerUpload}">Upload</button>
+</div>
+<input id="text-file" class="displaynt" type="file" accept="text/plain" on:change={(e) => handleFileUpload(e)} />
 {#if celebrate}
     {#each confetti as c}
         <span style="left: {c.x}%; top: {c.y}%; transform: scale({c.r})"
@@ -141,28 +155,44 @@
 {/if}
 
 <style>
-    @media only screen and (min-width: 768px) {
+    @media only screen and (min-width: 1000px) {
         .board {
             height: 30vw !important;
             width: 30vw !important;
         }
+        .button-group {
+            width: 30vw !important;
+        }
+    }
+
+    .button-group{
+        display: flex;
+        width: 80vw;
+        justify-content: center;
+    }
+    .button-group > button {
+        margin: auto;
+        width: 32%;
+    }
+    .displaynt{
+        display: none;
     }
     .board {
-        background: #aaa;
-        border: 1px solid #f76707;
+        background: #171923;
         display: flex;
         flex-wrap: wrap;
-        height: 60vw;
-        width: 60vw;
+        height: 80vw;
+        width: 80vw;
     }
     .board > .tile {
         flex: 1 1 30%;
-        transition: ease-out;
+        transition: ease-in;
         transition-duration: 0.5s;
     }
     .tile {
-        background-color: #fff4e6;
-        border: 1px solid #f76707;
+        background-color: #E6FFFA;
+        border-radius: 5px;
+        margin:3px;
         text-align: center;
         display: flex;
         justify-content: center;
@@ -173,7 +203,7 @@
     .board > .empty {
         flex: 1 1 30%;
         color: transparent;
-        border: 1px solid #f76707;
+        margin:3px;
     }
     .on_position {
         color: green;
@@ -181,6 +211,7 @@
 
     :global(body) {
         overflow: hidden;
+        background-color: #2D3748;
     }
     span {
         position: absolute;
