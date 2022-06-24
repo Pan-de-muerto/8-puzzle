@@ -26,6 +26,9 @@ El 12 Solo puede moverse hacia arriba
 
 # Como jugar
 
+- Has click en una ficha para moverla al espacio libre mas cercano.
+- Ordena las fichas por orden numerio y deja el espacio vacio al final. 
+
 **SHUFFLE:**
   Cambia el orden de las piezas aleatoreamente.
 
