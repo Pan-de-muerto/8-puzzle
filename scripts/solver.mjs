@@ -10,14 +10,15 @@
 // Level = Current level of nodes
 // Fval = Evaluation function value
 
-import _ from "lodash"
+import _, { curry } from "lodash"
 
 class State {
 
-    constructor(value, level, fval) {
+    constructor(value, level, fval, prev) {
         this.value = value;
         this.level = level;
         this.fval = fval;
+        this.prev = prev
     }
 
     generate_children() {
@@ -27,11 +28,10 @@ class State {
         coor_list.forEach(element => {
             let child = this.valid_position(this.value, x, y, element[0], element[1]);
             if (!!child) {
-                let child_node = new State(child, this.level + 1, 0);
+                let child_node = new State(child, this.level + 1, 0 ,this);
                 children.push(child_node);
             }
         });
-        //  console.log(children);
         return children;
     }
 
@@ -69,6 +69,7 @@ class Eight_Puzzle {
         this.size = size;
         this.fringe = [];
         this.explored = [];
+        this.path = [];
     }
 
     h_misplaced_tiles(initial_state, goal_state) {
@@ -96,13 +97,20 @@ class Eight_Puzzle {
         return { f: f_x, g: g_x, h: h_x }
     }
 
+    traverse(node){
+        path.push(node.value);
+        if(!!node.prev){
+          this.traverse(node.prev)
+        }
+    };
+
 
     stage_process(initial_state) {
-
+        let pathTree;
         let path = [];
         let goal_state = [[1, 2, 3], [4, 5, 6], [7, 8, 0]];
         let counter = 0;
-        initial_state = new State(initial_state, 0, 0);
+        initial_state = new State(initial_state, 0, 0, null);
         initial_state.fval = this.f_misplaced_tiles(initial_state, goal_state);
 
         this.fringe.push(initial_state);
@@ -112,11 +120,13 @@ class Eight_Puzzle {
             if (counter == 0) counter = 1;
 
             cur.value.forEach(x =>  console.log(x + "\n"));
-            
-            path.push(cur.value);
-
-            if (this.h_misplaced_tiles(cur.value, goal_state) == 0)
+            console.log("");
+        
+            if (this.h_misplaced_tiles(cur.value, goal_state) == 0){
+                pathTree = cur;
                 break;
+            }
+                
 
             cur.generate_children().forEach(element => {
                 element.fval = this.f_misplaced_tiles(element, goal_state);
@@ -127,21 +137,24 @@ class Eight_Puzzle {
             this.fringe.shift();
             this.fringe = _.sortBy(this.fringe, ['fval']);
             const { f, g, h } = obj.f1(cur, goal_state);
-
         }
 
+        this.traverse(pathTree);
 
-        return path;
     }
 
 }
+
+let path = [];
+
 let obj = new Eight_Puzzle(3);
 
 export const getPath = (initial_state) => {
-    return obj.stage_process(initial_state);
+    obj.stage_process(initial_state);
+    return path.reverse();
 }
 
 export const generateClidren = (initial_state) => {
-    let state = new State(initial_state, 0, 0);
+    let state = new State(initial_state, 0, 0 , null);
     return state.generate_children().map(x => x.value);
 }

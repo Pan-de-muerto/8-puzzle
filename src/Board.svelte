@@ -26,7 +26,7 @@
     let current = _.cloneDeep(solved);
 
     const randomize = () => {
-        const shuffleDepth = 4;
+        const shuffleDepth = 20;
         for(let i = 0 ; i <= shuffleDepth ; i++){
             let options = generateClidren(current);
             current = _.sample(options);
@@ -74,6 +74,7 @@
         });
         setTimeout(() => {
             alert("Fin de la partida");
+            location.reload()
         }, path.length * 1000);
     };
 
