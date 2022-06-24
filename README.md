@@ -24,3 +24,17 @@ El 11 solo puede moverse a la derecha
 El 8 solo puede moverse hacia abajo
 El 12 Solo puede moverse hacia arriba
 
+# Como jugar
+
+**SHUFFLE:**
+  Cambia el orden de las piezas aleatoreamente.
+
+**UPLOAD:**
+  Sube un archivo de texto (.txt) que contenga el orden de las fichas.
+  ej:
+      1, 3, 6
+      2, 5, 8
+      4, 7
+      
+**SOLVE:**
+  Resolver automaticamente el juego a partir del estado actual.
