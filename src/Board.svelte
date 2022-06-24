@@ -1,9 +1,9 @@
 <script>
     import _ from "lodash";
     import { onMount } from "svelte";
-    import { getPath , generateClidren } from "../scripts/solver.mjs";
+    import { getPath, generateClidren } from "../scripts/solver.mjs";
 
-    let characters = ["🍆" , "🔥" , "💯 ","🥵"];
+    let characters = ["🍆", "🔥", "💯 ", "🥵"];
     let confetti = new Array(100)
         .fill()
         .map((_, i) => {
@@ -23,11 +23,14 @@
         [7, 8, 0],
     ];
 
+    let hasChanged = false;
+
     let current = _.cloneDeep(solved);
 
     const randomize = () => {
+        hasChanged = true;
         const shuffleDepth = 20;
-        for(let i = 0 ; i <= shuffleDepth ; i++){
+        for (let i = 0; i <= shuffleDepth; i++) {
             let options = generateClidren(current);
             current = _.sample(options);
         }
@@ -37,14 +40,15 @@
         let file = e.target.files[0];
         let text = await file.text();
         let arr = _.map(text, _.parseInt).filter((x) => {
-            if(x == 0) return true;
+            if (x == 0) return true;
             return !!x;
         });
         if (arr.length < 9) arr.push(0);
         let board = _.chunk(arr, 3);
-        console.log(board);
-        if (canSolve(board)) current = board;
-        else alert("Ese tablero no tiene solución");
+        if (canSolve(board)) {
+            current = board;
+            hasChanged = true;
+        } else alert("Ese tablero no tiene solución");
     };
 
     const handleMove = (i, j) => {
@@ -61,8 +65,8 @@
             current[i][j + 1] = current[i][j];
             current[i][j] = 0;
         } else console.log("can't move");
-
         if (isSolved()) handleCelebration();
+        hasChanged = true;
     };
 
     const handleSolve = () => {
@@ -74,7 +78,7 @@
         });
         setTimeout(() => {
             alert("Fin de la partida");
-            location.reload()
+            location.reload();
         }, path.length * 1000);
     };
 
@@ -87,7 +91,8 @@
         let inv_count = 0;
         for (let i = 0; i < 2; i++) {
             for (let j = i + 1; j < 3; j++) {
-                if (board[j][i] > 0 && board[j][i] > board[i][j]) inv_count += 1;
+                if (board[j][i] > 0 && board[j][i] > board[i][j])
+                    inv_count += 1;
             }
         }
         return inv_count;
@@ -101,30 +106,29 @@
         let frame;
         celebrate = true;
 
-        setTimeout(function timer() {
-            alert("Ganaste!!!");
-            celebrate = false;
-        }, 5000);
+        if (hasChanged) {
+            setTimeout(function timer() {
+                alert("Ganaste!!!");
+                celebrate = false;
+            }, 5000);
 
-        function loop() {
-            if (celebrate) frame = requestAnimationFrame(loop);
-            confetti = confetti.map((emoji) => {
-                emoji.y += 0.7 * emoji.r;
-                if (emoji.y > 120) emoji.y = -20;
-                return emoji;
-            });
+            function loop() {
+                if (celebrate) frame = requestAnimationFrame(loop);
+                confetti = confetti.map((emoji) => {
+                    emoji.y += 0.7 * emoji.r;
+                    if (emoji.y > 120) emoji.y = -20;
+                    return emoji;
+                });
+            }
+
+            loop();
+            return () => cancelAnimationFrame(frame);
         }
-
-        loop();
-        return () => cancelAnimationFrame(frame);
     };
 
-    const triggerUpload= () => {
-        document.getElementById("text-file").click()
-    }
-
-
-
+    const triggerUpload = () => {
+        document.getElementById("text-file").click();
+    };
 </script>
 
 <div class="board">
@@ -143,10 +147,16 @@
 <br />
 <div class="button-group">
     <button on:click={handleSolve}>Solve</button>
-    <button on:click="{randomize}">Shuffle</button>
-    <button on:click="{triggerUpload}">Upload</button>
+    <button on:click={randomize}>Shuffle</button>
+    <button on:click={triggerUpload}>Upload</button>
 </div>
-<input id="text-file" class="displaynt" type="file" accept="text/plain" on:change={(e) => handleFileUpload(e)} />
+<input
+    id="text-file"
+    class="displaynt"
+    type="file"
+    accept="text/plain"
+    on:change={(e) => handleFileUpload(e)}
+/>
 {#if celebrate}
     {#each confetti as c}
         <span style="left: {c.x}%; top: {c.y}%; transform: scale({c.r})"
@@ -166,7 +176,7 @@
         }
     }
 
-    .button-group{
+    .button-group {
         display: flex;
         width: 80vw;
         justify-content: center;
@@ -175,7 +185,7 @@
         margin: auto;
         width: 32%;
     }
-    .displaynt{
+    .displaynt {
         display: none;
     }
     .board {
@@ -191,9 +201,9 @@
         transition-duration: 0.5s;
     }
     .tile {
-        background-color: #E6FFFA;
+        background-color: #e6fffa;
         border-radius: 5px;
-        margin:3px;
+        margin: 3px;
         text-align: center;
         display: flex;
         justify-content: center;
@@ -204,7 +214,7 @@
     .board > .empty {
         flex: 1 1 30%;
         color: transparent;
-        margin:3px;
+        margin: 3px;
     }
     .on_position {
         color: green;
@@ -212,7 +222,7 @@
 
     :global(body) {
         overflow: hidden;
-        background-color: #2D3748;
+        background-color: #2d3748;
     }
     span {
         position: absolute;

@@ -28,7 +28,7 @@ class State {
         coor_list.forEach(element => {
             let child = this.valid_position(this.value, x, y, element[0], element[1]);
             if (!!child) {
-                let child_node = new State(child, this.level + 1, 0 ,this);
+                let child_node = new State(child, this.level + 1, 0, this);
                 children.push(child_node);
             }
         });
@@ -97,10 +97,10 @@ class Eight_Puzzle {
         return { f: f_x, g: g_x, h: h_x }
     }
 
-    traverse(node){
+    traverse(node) {
         path.push(node.value);
-        if(!!node.prev){
-          this.traverse(node.prev)
+        if (!!node.prev) {
+            this.traverse(node.prev)
         }
     };
 
@@ -119,14 +119,14 @@ class Eight_Puzzle {
             let cur = this.fringe[0];
             if (counter == 0) counter = 1;
 
-            cur.value.forEach(x =>  console.log(x + "\n"));
+            cur.value.forEach(x => console.log(x + "\n"));
             console.log("");
-        
-            if (this.h_misplaced_tiles(cur.value, goal_state) == 0){
+
+            if (this.h_misplaced_tiles(cur.value, goal_state) == 0) {
                 pathTree = cur;
                 break;
             }
-                
+
 
             cur.generate_children().forEach(element => {
                 element.fval = this.f_misplaced_tiles(element, goal_state);
@@ -155,6 +155,6 @@ export const getPath = (initial_state) => {
 }
 
 export const generateClidren = (initial_state) => {
-    let state = new State(initial_state, 0, 0 , null);
+    let state = new State(initial_state, 0, 0, null);
     return state.generate_children().map(x => x.value);
 }
