@@ -105,7 +105,6 @@ class Eight_Puzzle {
     stage_process(initial_state) {
 
         let path = [];
-        //let initial_state = [[1, 2, 3], [4, 0, 6], [7, 5, 8]];
         let goal_state = [[1, 2, 3], [4, 5, 6], [7, 8, 0]];
         let counter = 0;
         initial_state = new State(initial_state, 0, 0);
@@ -125,7 +124,7 @@ class Eight_Puzzle {
                 // console.log(" \\/ \n")
             }
 
-            // console.log(cur.value);
+            console.log(JSON.stringify(cur.value));
             path.push(cur.value);
 
             if (this.h_misplaced_tiles(cur.value, goal_state) == 0)
@@ -155,8 +154,6 @@ class Eight_Puzzle {
     }
 
 }
-
-//const initial_state = [[1, 2, 3], [4, 0, 6], [7, 5, 8]];
 let obj = new Eight_Puzzle(3);
 
 export const getPath = (initial_state) => {

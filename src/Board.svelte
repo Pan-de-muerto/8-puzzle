@@ -1,6 +1,8 @@
 <script>
     import _ from "lodash";
-    import {getPath} from "../scripts/solver.mjs";
+    import { onMount } from "svelte";
+    import { getPath } from "../scripts/solver.mjs";
+
     let characters = ["🥳", "🎉", "✨"];
     let confetti = new Array(100)
         .fill()
@@ -14,39 +16,29 @@
         })
         .sort((a, b) => a.r - b.r);
     let celebrate = false;
-    let input = [
-        [1, 2, 3],
-        [4, 0, 6],
-        [7, 5, 8],
-    ];
+
     const solved = [
         [1, 2, 3],
         [4, 5, 6],
         [7, 8, 0],
     ];
-    
-    let current = input;
 
-    let path = getPath(current);
+    let current = _.cloneDeep(solved);
 
+    const randomize = () => {};
 
-    const randomize = () => {
-
-    }
-
-    const handleSolve = () => {
-        path.forEach((step, i) => {
-            setTimeout(function timer() {
-                current = step;
-            }, i * 500);
-        })
-        setTimeout(() => {
-            alert("Fin de la partida");
-        } , path.length * 500)
-    };
-
-    const isSolved = () => {
-        return _.isEqual(solved, current);
+    const handleFileUpload = async (e) => {
+        let file = e.target.files[0];
+        let text = await file.text();
+        let arr = _.map(text, _.parseInt).filter((x) => {
+            if(x == 0) return true;
+            return !!x;
+        });
+        if (arr.length < 9) arr.push(0);
+        let board = _.chunk(arr, 3);
+        console.log(board);
+        if (canSolve(board)) current = board;
+        else alert("Ese tablero no tiene solución");
     };
 
     const handleMove = (i, j) => {
@@ -65,6 +57,38 @@
         } else console.log("can't move");
 
         if (isSolved()) handleCelebration();
+    };
+
+    const handleSolve = () => {
+        let path = getPath(current);
+
+        path.forEach((step, i) => {
+            setTimeout(function timer() {
+                current = step;
+            }, i * 1000);
+        });
+        setTimeout(() => {
+            alert("Fin de la partida");
+        }, path.length * 1000);
+    };
+
+    const canSolve = (board) => {
+        let inv_count = getInvCount(board);
+        return inv_count % 2 == 0;
+    };
+
+    const getInvCount = (board) => {
+        let inv_count = 0;
+        for (let i = 0; i < 2; i++) {
+            for (let j = i + 1; j < 3; j++) {
+                if (board[j][i] > 0 && board[j][i] > board[i][j]) inv_count += 1;
+            }
+        }
+        return inv_count;
+    };
+
+    const isSolved = () => {
+        return _.isEqual(solved, current);
     };
 
     const handleCelebration = () => {
@@ -107,6 +131,7 @@
 <button on:click={handleSolve}>Solve</button>
 <button>Randomize</button>
 <button>Upload</button>
+<input type="file" accept="text/plain" on:change={(e) => handleFileUpload(e)} />
 {#if celebrate}
     {#each confetti as c}
         <span style="left: {c.x}%; top: {c.y}%; transform: scale({c.r})"
@@ -116,12 +141,11 @@
 {/if}
 
 <style>
-
     @media only screen and (min-width: 768px) {
         .board {
-        height: 30vw !important;
-        width: 30vw !important;
-    }
+            height: 30vw !important;
+            width: 30vw !important;
+        }
     }
     .board {
         background: #aaa;
