@@ -1,6 +1,6 @@
 <script>
     import _ from "lodash";
-
+    import {getPath} from "../scripts/solver.mjs";
     let characters = ["🥳", "🎉", "✨"];
     let confetti = new Array(100)
         .fill()
@@ -19,90 +19,30 @@
         [4, 0, 6],
         [7, 5, 8],
     ];
-    let current = input;
     const solved = [
         [1, 2, 3],
         [4, 5, 6],
         [7, 8, 0],
     ];
-    let path = [
-        [
-            [1, 2, 3],
-            [4, 0, 6],
-            [7, 5, 8],
-        ],
-        [
-            [1, 0, 3],
-            [4, 2, 6],
-            [7, 5, 8],
-        ],
-        [
-            [1, 2, 3],
-            [0, 4, 6],
-            [7, 5, 8],
-        ],
-        [
-            [1, 2, 3],
-            [4, 5, 6],
-            [7, 0, 8],
-        ],
-        [
-            [1, 2, 3],
-            [4, 6, 0],
-            [7, 5, 8],
-        ],
-        [
-            [1, 0, 3],
-            [4, 2, 6],
-            [7, 5, 8],
-        ],
-        [
-            [0, 1, 3],
-            [4, 2, 6],
-            [7, 5, 8],
-        ],
-        [
-            [1, 3, 0],
-            [4, 2, 6],
-            [7, 5, 8],
-        ],
-        [
-            [0, 2, 3],
-            [1, 4, 6],
-            [7, 5, 8],
-        ],
-        [
-            [1, 2, 3],
-            [0, 4, 6],
-            [7, 5, 8],
-        ],
-        [
-            [1, 2, 3],
-            [7, 4, 6],
-            [0, 5, 8],
-        ],
-        [
-            [1, 2, 3],
-            [4, 5, 6],
-            [0, 7, 8],
-        ],
-        [
-            [1, 2, 3],
-            [4, 5, 6],
-            [7, 0, 8],
-        ],
-        [
-            [1, 2, 3],
-            [4, 5, 6],
-            [7, 8, 0],
-        ],
-    ];
+    
+    let current = input;
+
+    let path = getPath(current);
+
+
+    const randomize = () => {
+
+    }
+
     const handleSolve = () => {
         path.forEach((step, i) => {
             setTimeout(function timer() {
                 current = step;
             }, i * 500);
-        }).then(() => alert("GANASTE !!"));
+        })
+        setTimeout(() => {
+            alert("Fin de la partida");
+        } , path.length * 500)
     };
 
     const isSolved = () => {
